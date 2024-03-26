@@ -41,7 +41,7 @@ This project includes two main scripts designed to analyze persistent homology i
 
 1. **Check for persistence barcodes:** Ensure Step 2 has been completed and barcode data is available.
 2. **Configure paths in the script:** Set `csv_a_dir`, `pdb_a_dir`, `csv_b_dir`, and `pdb_b_dir` to the directories containing your CSV and PDB files, respectively.
-3. **Execute the script:** Run `calculate_distances.py` to compute Wasserstein distances and visualize the results.
+3. **Execute the script:** Run `analyse.py` to compute Wasserstein distances and visualize the results.
 
 ### Results
 
