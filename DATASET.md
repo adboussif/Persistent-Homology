@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides details on the datasets used for the analysis of the BCL2 protein family through persistent homology. The datasets include sequences from a Reference Proteome of validated BCL2 proteins and a Control Proteome from well-characterized species.
+This document provides details on the datasets used for the analysis of the BCL2 protein family through persistent homology. The datasets include 111 sequences from a Reference Proteome of validated BCL2 proteins and a Control Proteome from well-characterized species (already Alpha Carbones filtered with `pdb.py`)
 
 ## Datasets Description
 
