@@ -17,27 +17,25 @@ def count_alpha_carbons(file_path):
     return count
 
 def calculate_normalized_wasserstein_distance(args):
-    file1, file2, output_csv_dir, pdb_reference_dir, pdb_target_dir = args
-    pdb_file1 = construct_pdb_path(file1, pdb_reference_dir, pdb_target_dir)
-    pdb_file2 = construct_pdb_path(file2, pdb_reference_dir, pdb_target_dir)
-
-    df1 = pd.read_csv(os.path.join(output_csv_dir, file1), usecols=["Birth", "Death"]).dropna().to_numpy()
-    df2 = pd.read_csv(os.path.join(output_csv_dir, file2), usecols=["Birth", "Death"]).dropna().to_numpy()
+    ref_file, target_file, ref_output_csv_dir, pdb_file1_path, pdb_file2_path = args
+    df1 = pd.read_csv(os.path.join(ref_output_csv_dir, ref_file), usecols=["Birth", "Death"]).dropna().to_numpy()
+    df2 = pd.read_csv(os.path.join(ref_output_csv_dir, target_file), usecols=["Birth", "Death"]).dropna().to_numpy()
 
     if df1.size == 0 or df2.size == 0:
-        return np.nan, file1, file2, 0, 0
+        return np.nan, ref_file, target_file, 0, 0
 
-    count1 = count_alpha_carbons(pdb_file1)
-    count2 = count_alpha_carbons(pdb_file2)
+    count1 = count_alpha_carbons(pdb_file1_path)
+    count2 = count_alpha_carbons(pdb_file2_path)
     mean_alpha_count = (count1 + count2) / 2.0
 
     if mean_alpha_count == 0:
-        return np.nan, file1, file2, count1, count2
+        return np.nan, ref_file, target_file, count1, count2
 
     distance = wasserstein_distance(df1, df2, order=1, internal_p=2)
     normalized_distance = distance / mean_alpha_count
 
-    return normalized_distance, file1, file2, count1, count2
+    return normalized_distance, ref_file, target_file, count1, count2
+
     print("Distances calculées")
 
 def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
@@ -49,21 +47,23 @@ def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
 
 
 
-def process_pairs(output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
-    ref_files = [f for f in os.listdir(output_csv_dir) if f.startswith("ref_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
-    target_files = [f for f in os.listdir(output_csv_dir) if f.startswith("target_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
+def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
+    ref_files = [f for f in os.listdir(ref_output_csv_dir) if f.startswith('ref_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
+    target_files = [f for f in os.listdir(target_output_csv_dir) if f.startswith('target_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
 
     tasks = []
-    for file_a in ref_files:
-        for file_b in target_files:
-            pdb_file1 = construct_pdb_path(file_a, pdb_reference_dir, pdb_target_dir)
-            pdb_file2 = construct_pdb_path(file_b, pdb_reference_dir, pdb_target_dir)
-            tasks.append((file_a, file_b, output_csv_dir, pdb_reference_dir, pdb_target_dir))
+    for ref_file in ref_files:
+        for target_file in target_files:
+            pdb_file1_path = construct_pdb_path(ref_file, pdb_reference_dir, pdb_target_dir)
+            pdb_file2_path = construct_pdb_path(target_file, pdb_reference_dir, pdb_target_dir)
+            tasks.append((ref_file, target_file, ref_output_csv_dir, pdb_file1_path, pdb_file2_path))
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)
 
     return results
+
+
 
 
 def visualize_results(results, barcode_suffix, output_dir):
