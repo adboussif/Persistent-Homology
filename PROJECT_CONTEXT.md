@@ -24,7 +24,7 @@ The research encompasses two distinct stages:
    We use sequences from our Reference Proteome to predict and evaluate 3D structures of BCL2 proteins using AlphaFold2. We focus on high-confidence structures to ensure the quality and reliability of subsequent analyses.
 
 2. **Topological Data Analysis:**
-   TDA, particularly persistent homology, is utilized to gain insights into the topology of BCL2 proteins. We automate the generation of barcodes for each structure and create a Wasserstein distance matrix, distributing these distances in a histogram to identify ranges that indicate significant structural similarity.
+   TDA, particularly persistent homology, is utilized to gain insights into the topology of BCL2 proteins. We automate the generation of barcodes for each structure and create a Wasserstein distance matrix, distributing these distances in a density plot to identify ranges that indicate significant structural similarity and a heatmap to visualize the pairwise distances between structures, revealing clusters and patterns of similarity within the protein family.
 
 ## Conclusion
 
