@@ -22,10 +22,7 @@ def main(reference_path, target_path, output_dir):
     # Traitement des distances et visualisation pour chaque type de barcode
     for barcode_suffix in ['1', '2']:
         print(f"Traitement des distances pour barcode{barcode_suffix}.")
-        results = process_pairs(os.path.join(base_dir_ref, "output"), 
-                        barcode_suffix, 
-                        reference_path, 
-                        target_path)
+        results = process_pairs(base_dir_ref + "/output",base_dir_target + "/output", barcode_suffix, base_dir_ref, base_dir_target)
         visualize_results(results, barcode_suffix, output_dir)
 
     # Enregistrement des résultats globaux dans un fichier CSV
