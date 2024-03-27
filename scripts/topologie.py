@@ -19,19 +19,17 @@ def main(reference_path, target_path, output_dir):
     explore_and_process_files(reference_path, base_dir_ref, partial(process_file, output_dir=base_dir_ref, dimension='1', is_reference=True))
     explore_and_process_files(target_path, base_dir_target, partial(process_file, output_dir=base_dir_target, dimension='2', is_reference=False))
 
-    # Traitement des distances et visualisation pour chaque type de barcode
     for barcode_suffix in ['1', '2']:
         print(f"Traitement des distances pour barcode{barcode_suffix}.")
-        results = process_pairs(base_dir_ref + "/output",base_dir_target + "/output", barcode_suffix, base_dir_ref, base_dir_target)
-        # Exemple d'appel mis à jour à process_pairs
         results = process_pairs(
-            base_dir_ref + "/output",
-            base_dir_target + "/output",
-            barcode_suffix,
-            reference_path,  
-            target_path      
+            ref_output_csv_dir=base_dir_ref + "/output",
+            target_output_csv_dir=base_dir_target + "/output",
+            barcode_suffix=barcode_suffix,
+            pdb_reference_dir=reference_path, # Utilisez le chemin original vers les fichiers PDB de référence
+            pdb_target_dir=target_path # Utilisez le chemin original vers les fichiers PDB cible
         )
         visualize_results(results, barcode_suffix, output_dir)
+
 
     # Enregistrement des résultats globaux dans un fichier CSV
     save_results_to_csv_path = os.path.join(output_dir, "distance_results.csv")
