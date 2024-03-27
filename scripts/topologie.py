@@ -16,8 +16,8 @@ def main(reference_path, target_path, output_dir):
     os.makedirs(base_dir_target, exist_ok=True)
 
     # Génération des barcodes pour les fichiers PDB de référence et cible
-    explore_and_process_files(reference_path, base_dir_ref, partial(process_file, output_dir=base_dir_ref, dimension='1'))
-    explore_and_process_files(target_path, base_dir_target, partial(process_file, output_dir=base_dir_target, dimension='2'))
+    explore_and_process_files(reference_path, base_dir_ref, partial(process_file, output_dir=base_dir_ref, dimension='1', is_reference=True))
+    explore_and_process_files(target_path, base_dir_target, partial(process_file, output_dir=base_dir_target, dimension='2', is_reference=False))
 
     # Traitement des distances et visualisation pour chaque type de barcode
     for barcode_suffix in ['1', '2']:

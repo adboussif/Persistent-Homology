@@ -19,15 +19,17 @@ def count_alpha_carbons(file_path):
 
 def calculate_normalized_wasserstein_distance(args):
     file1, file2, output_csv_dir, pdb_reference_dir, pdb_target_dir = args
+    
+    # Utilise `construct_pdb_path` pour obtenir le bon chemin basé sur le préfixe du fichier
+    pdb_file1 = construct_pdb_path(file1, pdb_reference_dir, pdb_target_dir)
+    pdb_file2 = construct_pdb_path(file2, pdb_reference_dir, pdb_target_dir)
+
     df1 = pd.read_csv(os.path.join(output_csv_dir, file1), usecols=["Birth", "Death"]).dropna().to_numpy()
     df2 = pd.read_csv(os.path.join(output_csv_dir, file2), usecols=["Birth", "Death"]).dropna().to_numpy()
 
     if df1.size == 0 or df2.size == 0:
         return np.nan, file1, file2, 0, 0
 
-    pdb_file1 = os.path.join(pdb_reference_dir, file1.replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb'))
-    pdb_file2 = os.path.join(pdb_target_dir, file2.replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb'))
-    
     count1 = count_alpha_carbons(pdb_file1)
     count2 = count_alpha_carbons(pdb_file2)
     mean_alpha_count = (count1 + count2) / 2.0
@@ -40,13 +42,25 @@ def calculate_normalized_wasserstein_distance(args):
 
     return normalized_distance, file1, file2, count1, count2
 
+def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
+    actual_file_name = file_name.replace('ref_', '').replace('target_', '').replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb')
+    if 'ref_' in file_name:
+        return os.path.join(pdb_reference_dir, actual_file_name)
+    else:
+        return os.path.join(pdb_target_dir, actual_file_name)
+
+
+
 def process_pairs(output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
     tasks = []
     for file_a in os.listdir(output_csv_dir):
         if file_a.endswith(f'_barcode{barcode_suffix}.csv'):
+            # Déterminer si le fichier provient de la référence ou de la cible
+            pdb_dir_a = pdb_reference_dir if file_a.startswith("ref_") else pdb_target_dir
             for file_b in os.listdir(output_csv_dir):
                 if file_b.endswith(f'_barcode{barcode_suffix}.csv') and file_a != file_b:
-                    tasks.append((file_a, file_b, output_csv_dir, pdb_reference_dir, pdb_target_dir))
+                    pdb_dir_b = pdb_reference_dir if file_b.startswith("ref_") else pdb_target_dir
+                    tasks.append((file_a, file_b, output_csv_dir, pdb_dir_a, pdb_dir_b))
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)

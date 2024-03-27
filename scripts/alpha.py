@@ -25,25 +25,21 @@ def calculate_alpha_complex(coordinates):
     barcode2 = simplex_tree.persistence_intervals_in_dimension(2)
     return barcode1, barcode2
 
-def process_file(input_path, output_dir, file_name, dimension):
-    # Génération du chemin de base pour la sauvegarde des fichiers
-    output_file_base = os.path.basename(file_name)[:-4]
+def process_file(input_path, output_dir, file_name, dimension, is_reference):
+    # Choix du préfixe en fonction de l'appartenance du fichier à l'ensemble de référence ou cible
+    output_file_base_prefix = "ref_" if is_reference else "target_"
+    output_file_base = output_file_base_prefix + os.path.basename(file_name)[:-4]
     
-    # Assure-toi que les chemins des dossiers pour les images et CSVs sont corrects
     barcode_image_dir = os.path.join(output_dir, 'barcodes')
     csv_output_dir = os.path.join(output_dir, 'output')
 
-    # Vérifie et crée les dossiers si nécessaire
     os.makedirs(barcode_image_dir, exist_ok=True)
     os.makedirs(csv_output_dir, exist_ok=True)
 
     pdb_file_path = os.path.join(input_path, file_name)
-
-    # Calcul des complexes alpha et des barcodes
     coordinates = read_coordinates_from_pdb(pdb_file_path)
     barcode1, barcode2 = calculate_alpha_complex(coordinates)
 
-    # Sauvegarde des images de barcode
     for barcode, dim in zip([barcode1, barcode2], ['1', '2']):
         plt.figure(figsize=(8, 6))
         gudhi.plot_persistence_barcode(barcode)
@@ -53,11 +49,11 @@ def process_file(input_path, output_dir, file_name, dimension):
         plt.savefig(os.path.join(barcode_image_dir, f"{output_file_base}_barcode{dim}.png"))
         plt.close()
 
-    # Sauvegarde des fichiers CSV des barcodes
     for barcode, dim in zip([barcode1, barcode2], ['1', '2']):
         barcode_df = pd.DataFrame(barcode, columns=["Birth", "Death"])
         csv_file_path = os.path.join(csv_output_dir, f"{output_file_base}_barcode{dim}.csv")
         barcode_df.to_csv(csv_file_path, index=False)
+
 
 
 def explore_and_process_files(input_path, output_dir, process_file_callback):
