@@ -12,7 +12,7 @@ The project workflow includes evaluating 3D structures of BCL2 proteins, analyzi
 
 ## Dataset
 
-The dataset consists of validated BCL2 protein sequences and putative BCL2 sequences across various animal proteomes. Details about the datasets are available in the `DATASET.md` file.
+The dataset consists of validated BCL2 protein sequences and PDB files across various animal proteomes. Details about the datasets are available in the `DATASET.md` file.
 
 ## Objectives
 
