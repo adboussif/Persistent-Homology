@@ -37,18 +37,11 @@ def calculate_normalized_wasserstein_distance(args):
 
     distance = wasserstein_distance(df1, df2, order=1, internal_p=2)
     normalized_distance = distance / mean_alpha_count
-
     return normalized_distance, ref_file, target_file, count1, count2
-
-
-    print("Distances calculées")
 
 def construct_pdb_path(file_name, is_reference, pdb_reference_dir, pdb_target_dir):
     actual_file_name = file_name.replace('ref_', '').replace('target_', '').replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb')
     return os.path.join(pdb_reference_dir if is_reference else pdb_target_dir, actual_file_name)
-
-
-
 
 def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
     ref_files = [f for f in os.listdir(ref_output_csv_dir) if f.startswith('ref_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
@@ -76,18 +69,21 @@ def visualize_results(results, barcode_suffix, output_dir):
         print("No valid distances for visualization.")
         return
 
-    file_names = sorted(set(res[1] for res in filtered_results) | set(res[2] for res in filtered_results))
-    file_index = {name: idx for idx, name in enumerate(file_names)}
+    ref_names = sorted(set(res[1] for res in filtered_results))
+    target_names = sorted(set(res[2] for res in filtered_results))
 
-    distance_matrix = np.full((len(file_names), len(file_names)), np.nan)
+    # Création d'une matrice de distance vide
+    distance_matrix = np.full((len(ref_names), len(target_names)), np.nan)
     for res in filtered_results:
         if res[0] is not np.nan:
-            i = file_index[res[1]]
-            j = file_index[res[2]]
-            distance_matrix[i, j] = res[0]
+            j = ref_names.index(res[1])  # Fichiers de référence sur l'axe des x
+            i = target_names.index(res[2])  # Fichiers cibles sur l'axe des y
+            distance_matrix[j, i] = res[0]  # Correction de l'indice
 
+    # Visualisation
     fig, axs = plt.subplots(1, 2, figsize=(14, 7))
 
+    # Graph de densité
     sns.kdeplot(distances, ax=axs[0], fill=True)
     axs[0].set_title(f'Graphe de densité des Distances en Dimension {barcode_suffix}')
     axs[0].set_xlabel('Distance')
@@ -99,11 +95,12 @@ def visualize_results(results, barcode_suffix, output_dir):
     axs[0].axvline(q3, color='b', linestyle='--', label=f'Q3: {q3:.3f}')
     axs[0].legend()
 
+    # Heatmap
     im = axs[1].imshow(distance_matrix, cmap='viridis', aspect='auto')
     fig.colorbar(im, ax=axs[1])
     axs[1].set_title(f'Heatmap of Wasserstein Distances - Barcode {barcode_suffix}')
-    axs[1].set_xlabel('Reference')
-    axs[1].set_ylabel('Target')
+    axs[1].set_xlabel('Reference Files')
+    axs[1].set_ylabel('Target Files')
 
     axs[1].set_xticks([])
     axs[1].set_yticks([])
@@ -126,7 +123,7 @@ def save_results_to_csv(results, output_csv_path, barcode_suffix):
         for r in sorted_results if r[0] is not np.nan
     ]
 
-    df = pd.DataFrame(data, columns=['Target Barcode', 'Reference Barcode', 'Distance', 'Number of Alpha Carbons in Target', 'Number of Alpha Carbons in Reference'])
+    df = pd.DataFrame(data, columns=['Reference', 'Target', 'Distance', 'Number of Alpha Carbons in Target', 'Number of Alpha Carbons in Reference'])
     adjusted_output_csv_path = output_csv_path.replace('.csv', f'_barcode{barcode_suffix}.csv')
     df.to_csv(adjusted_output_csv_path, index=False)
 
