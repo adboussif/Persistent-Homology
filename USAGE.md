@@ -57,15 +57,31 @@ The `topologie.py` script also handles the calculation of Wasserstein distances 
 
 #### Results
 
-- Heatmap images visualizing the Wasserstein distances between protein structures from the reference and target sets. These images are saved in the specified output directory.
+- A PNG file `visualization.png`(Heatmap and Density plot) visualizing the Wasserstein distances between protein structures from the reference and target sets. These images are saved in the specified output directory.
 - A CSV file `distance_results.csv` listing the calculated distances for further analysis. This file is also saved in the specified output directory.
 
 This streamlined process simplifies the analysis of protein structures using topological data analysis methods, from persistence barcode generation to comparing structures with Wasserstein distances.
 
 ## Step 2b: Calculating Wasserstein Distance and Visualization (RipsComplex)
 
-1. **Prepare Your PDB Files:** Place your protein structure files (in PDB format, with only alpha carbon atoms) in the appropriate input directory. The input directories are specified by modfiying the `rips_complex.py` script with the `-ref` and `-target` options for the reference and target protein structures, respectively.
-2. **Run the Script:** Execute the `topologie.py` script, specifying the reference (`-ref`) and target (`-target`) directories, and the output directory (`-o`) where you want the results to be saved.
+**Prepare Your PDB Files:** Place your protein structure files (in PDB format, with only alpha carbon atoms) in the appropriate input directory. The input and output directories have to be specified in the `rips_complex.py` script itself.
+
+#### Results
+
+- Persistence barcodes as PNG images, stored in the specified output directory.
+- CSV files containing barcode data, also stored in the specified output directory.
+
+## Step 3b: Calculating Wasserstein Distance and Visualization (RipsComplex)
+
+1. **Prepare Your PDB Files:** Place your protein structure files (in PDB format, with only alpha carbon atoms) in the appropriate input directory. The input directories are have to be specified in the `analyse.py` script.
+2. **Prepare Your CSV Files:** Place your barcode files (in CSV format) in the appropriate input directory. Also the input and output directories have to be specified in the `analyse.py`.
+
+#### Results
+
+- A PNG file `visualization.png`(Heatmap and Density plot) visualizing the Wasserstein distances between protein structures from the reference and target sets. These images are saved in the specified output directory.
+- A CSV file `distance_results.csv` listing the calculated distances for further analysis. This file is also saved in the specified output directory.
+
+This streamlined process simplifies the analysis of protein structures using topological data analysis methods, from persistence barcode generation to comparing structures with Wasserstein distances.
 
 ## Additional Information
 
