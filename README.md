@@ -28,7 +28,8 @@ A Python pipeline processes an analysis of persistent homology on PDB structures
 
 The pipeline is designed to:
 - Evaluate 3D structures of BCL2 proteins.
-- Select high-confidence structures based on Ca pLDDT values.
+- Identify high-confidence structures based on Ca pLDDT values
+- Extract coordinates of Alpha Carbons from PDB files.
 - Generate barcodes and Wasserstein distances using the GUDHI Python library.
 
 ## Usage
