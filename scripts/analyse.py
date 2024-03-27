@@ -17,16 +17,13 @@ def count_alpha_carbons(file_path):
     return count
 
 def calculate_normalized_wasserstein_distance(args):
-    ref_file, is_ref, target_file, is_target, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir = args
+    ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir = args
     
-    # Charger les données des barcodes depuis les fichiers CSV
     df1 = pd.read_csv(os.path.join(ref_output_csv_dir, ref_file), usecols=["Birth", "Death"]).dropna().to_numpy()
     df2 = pd.read_csv(os.path.join(target_output_csv_dir, target_file), usecols=["Birth", "Death"]).dropna().to_numpy()
 
-    # Construire les chemins vers les fichiers PDB 
-    pdb_file1_path = construct_pdb_path(ref_file, pdb_reference_dir, pdb_target_dir)
-    pdb_file2_path = construct_pdb_path(target_file, pdb_reference_dir, pdb_target_dir)
-
+    pdb_file1_path = construct_pdb_path(ref_file, True, pdb_reference_dir, pdb_target_dir)
+    pdb_file2_path = construct_pdb_path(target_file, False, pdb_reference_dir, pdb_target_dir)
 
     if df1.size == 0 or df2.size == 0:
         return np.nan, ref_file, target_file, 0, 0
@@ -42,6 +39,7 @@ def calculate_normalized_wasserstein_distance(args):
     normalized_distance = distance / mean_alpha_count
 
     return normalized_distance, ref_file, target_file, count1, count2
+
 
     print("Distances calculées")
 
@@ -59,18 +57,12 @@ def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb
     tasks = []
     for ref_file in ref_files:
         for target_file in target_files:
-            # Include an is_reference flag for each file in the task
-            tasks.append((ref_file, True, target_file, False, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir))
+            tasks.append((ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir))
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)
 
     return results
-
-
-
-
-
 
 def visualize_results(results, barcode_suffix, output_dir):
     filtered_results = [result for result in results if f"_barcode{barcode_suffix}.csv" in result[1]]
