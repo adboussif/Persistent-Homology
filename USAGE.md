@@ -17,14 +17,21 @@ pip install GUDHI biopython matplotlib seaborn pandas numpy pickle functools arg
 ### Process
 
 1. **Predicting with Alphafold2:** We used NMRbox, a VM which allows us to perform Alphafold2 prediction from our set of 111 primary BCL2 sequences.
-2. **Processing Alpha Carbon Capture (Alphafold2):** Use alphafold.py which will process pdb file predicted by Alphafold and keep well predicted atoms based on their pLDDT.
-3. **Processing Alpha Carbon Capture (PDB database):** Use pdb.py which will process pdb file downloaded from the PDB database and remove all atoms except alpha carbones.
+2. **Processing Alpha Carbon Capture (Alphafold2):** Use `alphafold.py` which will process pdb file predicted by Alphafold and keep well predicted atoms based on their pLDDT.
+3. **Processing Alpha Carbon Capture (PDB database):** Use `pdb.py` which will process pdb file downloaded from the PDB database and remove all atoms except alpha carbones.
 4. **Run the script:** Execute the script that suits your dataset.
+
+Example usage:
+
+```bash
+./alphafold.py -d /path/to/pdb_predicted -o /path/to/output
+./pdb.py -d /path/to/pdb -o /path/to/output
+```
 
 ### Output
 
 - PDB files containing only alpha carbon coordinates.
-- CSV file containing a summary of before and after PDB files based on the pLDDT and number of alpha carbons before and after select_ca.py
+- CSV file containing a summary of `alphafold.py`
 
 ## Step 2: Generating Persistence Barcodes
 
