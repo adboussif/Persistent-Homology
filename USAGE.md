@@ -33,7 +33,7 @@ Example usage:
 - PDB files containing only alpha carbon coordinates.
 - CSV file containing a summary of `alphafold.py`
 
-## Step 2: Generating Persistence Barcodes (AlphaComplex)
+## Step 2a: Generating Persistence Barcodes (AlphaComplex)
 
 #### Process
 
@@ -51,7 +51,7 @@ Example usage:
 - Persistence barcodes as PNG images, stored in the specified output directory under `reference/barcodes` and `target/barcodes`.
 - CSV files containing barcode data, located in `reference/output` and `target/output`.
 
-## Step 3: Calculating Wasserstein Distance and Visualization (AlphaComplex)
+## Step 3a: Calculating Wasserstein Distance and Visualization (AlphaComplex)
 
 The `topologie.py` script also handles the calculation of Wasserstein distances between persistence barcodes on the same dimension and their visualization. The steps described in Step 2 are sufficient for the entire process from barcode generation to distance calculation and visualization.
 
@@ -62,7 +62,7 @@ The `topologie.py` script also handles the calculation of Wasserstein distances 
 
 This streamlined process simplifies the analysis of protein structures using topological data analysis methods, from persistence barcode generation to comparing structures with Wasserstein distances.
 
-## Step 3: Calculating Wasserstein Distance and Visualization (RipsComplex)
+## Step 2b: Calculating Wasserstein Distance and Visualization (RipsComplex)
 
 1. **Prepare Your PDB Files:** Place your protein structure files (in PDB format, with only alpha carbon atoms) in the appropriate input directory. The input directories are specified by modfiying the `rips_complex.py` script with the `-ref` and `-target` options for the reference and target protein structures, respectively.
 2. **Run the Script:** Execute the `topologie.py` script, specifying the reference (`-ref`) and target (`-target`) directories, and the output directory (`-o`) where you want the results to be saved.
