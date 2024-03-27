@@ -17,7 +17,7 @@ def count_alpha_carbons(file_path):
     return count
 
 def calculate_normalized_wasserstein_distance(args):
-    ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir = args
+    ref_file, is_ref, target_file, is_target, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir = args
     
     # Charger les données des barcodes depuis les fichiers CSV
     df1 = pd.read_csv(os.path.join(ref_output_csv_dir, ref_file), usecols=["Birth", "Death"]).dropna().to_numpy()
@@ -47,10 +47,8 @@ def calculate_normalized_wasserstein_distance(args):
 
 def construct_pdb_path(file_name, is_reference, pdb_reference_dir, pdb_target_dir):
     actual_file_name = file_name.replace('ref_', '').replace('target_', '').replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb')
-    if is_reference:
-        return os.path.join(pdb_reference_dir, actual_file_name)
-    else:
-        return os.path.join(pdb_target_dir, actual_file_name)
+    return os.path.join(pdb_reference_dir if is_reference else pdb_target_dir, actual_file_name)
+
 
 
 
@@ -61,13 +59,14 @@ def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb
     tasks = []
     for ref_file in ref_files:
         for target_file in target_files:
-            tasks.append((ref_file, target_file, True, pdb_reference_dir, pdb_target_dir))  # True pour is_reference pour ref_file
-            tasks.append((target_file, ref_file, False, pdb_target_dir, pdb_reference_dir))  # False pour is_reference pour target_file
+            # Include an is_reference flag for each file in the task
+            tasks.append((ref_file, True, target_file, False, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir))
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)
 
     return results
+
 
 
 
