@@ -8,8 +8,10 @@ This project includes three main scripts designed to filter Alpha Carbones in PD
 - Libraries: GUDHI, BioPython, matplotlib, seaborn, pandas, numpy, pickle, functools, argparse, csv
 - PDB files of protein structures
 
+````markdown
 ```bash
-pip install GUDHI biopython matplotlib seaborn pandas numpy pickle functools argparse csv```
+pip install GUDHI biopython matplotlib seaborn pandas numpy pickle functools argparse csv
+
 
 
 ## Step 1: Preparing PDB files / Predicting with Alphafold2
@@ -34,8 +36,9 @@ pip install GUDHI biopython matplotlib seaborn pandas numpy pickle functools arg
 
 2. **Run the Script:** Execute the `topologie.py` script, specifying the reference (`-ref`) and target (`-target`) directories, and the output directory (`-o`) where you want the results to be saved.
 Example usage:
+````markdown
 ```bash
-./topologie.py -ref path/to/reference -target path/to/target -o path/to/output```
+./topologie.py -ref path/to/reference -target path/to/target -o path/to/output
 
 #### Output
 
