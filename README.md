@@ -24,9 +24,10 @@ The dataset consists of validated BCL2 protein sequences and putative BCL2 seque
 
 ## Pipeline
 
-A Python pipeline processes primary protein sequences through AlphaFold2 for structural predictions, followed by an analysis of persistent homology. The pipeline is designed to:
+A Python pipeline processes an analysis of persistent homology on PDB structures.
 
-- Predict and evaluate 3D structures of BCL2 proteins.
+The pipeline is designed to:
+- Evaluate 3D structures of BCL2 proteins.
 - Select high-confidence structures based on Ca pLDDT values.
 - Generate barcodes and Wasserstein distances using the GUDHI Python library.
 
