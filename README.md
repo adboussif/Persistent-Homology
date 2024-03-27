@@ -38,14 +38,3 @@ Instructions for running the analysis are detailed in `USAGE.md`.
 
 Scripts used throughout the project are well-documented. Please refer to `SCRIPTS.md` for more information.
 
-## Troubleshooting
-
-For common issues encountered during the project setup or execution, please check `TROUBLESHOOTING.md`.
-
-## Contributing
-
-Contributions to the project are welcome. For contributing guidelines, please read `CONTRIBUTING.md`.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
