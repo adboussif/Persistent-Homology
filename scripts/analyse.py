@@ -19,11 +19,14 @@ def count_alpha_carbons(file_path):
 def calculate_normalized_wasserstein_distance(args):
     ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir = args
     
-    # Lire le fichier CSV de référence
+    # Charger les données des barcodes depuis les fichiers CSV
     df1 = pd.read_csv(os.path.join(ref_output_csv_dir, ref_file), usecols=["Birth", "Death"]).dropna().to_numpy()
-    
-    # Lire le fichier CSV cible
     df2 = pd.read_csv(os.path.join(target_output_csv_dir, target_file), usecols=["Birth", "Death"]).dropna().to_numpy()
+
+    # Construire les chemins vers les fichiers PDB 
+    pdb_file1_path = construct_pdb_path(ref_file, pdb_reference_dir, pdb_target_dir)
+    pdb_file2_path = construct_pdb_path(target_file, pdb_reference_dir, pdb_target_dir)
+
 
     if df1.size == 0 or df2.size == 0:
         return np.nan, ref_file, target_file, 0, 0
@@ -52,12 +55,13 @@ def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
 
 
 def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
-    ref_files = [f for f in os.listdir(ref_output_csv_dir) if f.startswith("ref_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
-    target_files = [f for f in os.listdir(target_output_csv_dir) if f.startswith("target_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
-    
+    ref_files = [f for f in os.listdir(ref_output_csv_dir) if f.startswith('ref_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
+    target_files = [f for f in os.listdir(target_output_csv_dir) if f.startswith('target_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
+
     tasks = []
     for ref_file in ref_files:
         for target_file in target_files:
+            # Ajouter la tâche pour calculer la distance entre le fichier de référence et le fichier cible
             tasks.append((ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir))
 
     with multiprocessing.Pool() as pool:
