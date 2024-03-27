@@ -53,6 +53,7 @@ def construct_pdb_path(file_name, is_reference, pdb_reference_dir, pdb_target_di
         return os.path.join(pdb_target_dir, actual_file_name)
 
 
+
 def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
     ref_files = [f for f in os.listdir(ref_output_csv_dir) if f.startswith('ref_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
     target_files = [f for f in os.listdir(target_output_csv_dir) if f.startswith('target_') and f.endswith(f'_barcode{barcode_suffix}.csv')]
@@ -60,13 +61,14 @@ def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb
     tasks = []
     for ref_file in ref_files:
         for target_file in target_files:
-            # Ajouter la tâche pour calculer la distance entre le fichier de référence et le fichier cible
-            tasks.append((ref_file, target_file, ref_output_csv_dir, target_output_csv_dir, pdb_reference_dir, pdb_target_dir))
+            tasks.append((ref_file, target_file, True, pdb_reference_dir, pdb_target_dir))  # True pour is_reference pour ref_file
+            tasks.append((target_file, ref_file, False, pdb_target_dir, pdb_reference_dir))  # False pour is_reference pour target_file
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)
 
     return results
+
 
 
 
