@@ -1,6 +1,6 @@
 # Using the Scripts for Persistent Homology Analysis
 
-This project includes two main scripts designed to analyze persistent homology in proteins, focusing on the BCL2 protein family. Here's how to use them.
+This project includes two main scripts designed to filter Alpha Carbones in PDB file (from database or predicted by Alphafold2) and to analyze protein structures through persistence barcodes and calculate Wasserstein distances for comparison.
 
 ## Requirements
 
@@ -24,30 +24,29 @@ This project includes two main scripts designed to analyze persistent homology i
 
 ## Step 2: Generating Persistence Barcodes
 
-### Process
+#### Process
 
-1. **Prepare your PDB files:** Ensure your protein structure files (in PDB format with only alpha carbones atomes) are placed in the appropriate input directory.
-2. **Configure the script:** Set the `input_path` to your directory of PDB files and `output_dir` to where you want the barcode images and CSV files saved.
-3. **Run the script:** Execute `alpha.py` to analyze the PDB files and generate persistence barcodes.
+1. **Prepare Your PDB Files:** Place your protein structure files (in PDB format, with only alpha carbon atoms) in the appropriate input directory. The input directories are specified when running the `topologie.py` script with the `-ref` and `-target` options for the reference and target protein structures, respectively.
 
-### Output
+2. **Run the Script:** Execute the `topologie.py` script, specifying the reference (`-ref`) and target (`-target`) directories, and the output directory (`-o`) where you want the results to be saved.
+Example usage: ./topologie.py -ref path/to/reference -target path/to/target -o path/to/output
 
-- Persistence barcodes as PNG images.
-- CSV files containing barcode data.
+#### Output
 
-## Step 2: Calculating Wasserstein Distance and Visualization
+- Persistence barcodes as PNG images, stored in the specified output directory under `reference/barcodes` and `target/barcodes`.
+- CSV files containing barcode data, located in `reference/output` and `target/output`.
 
-### Setup
+### Step 3: Calculating Wasserstein Distance and Visualization
 
-1. **Check for persistence barcodes:** Ensure Step 2 has been completed and barcode data is available.
-2. **Configure paths in the script:** Set `csv_a_dir`, `pdb_a_dir`, `csv_b_dir`, and `pdb_b_dir` to the directories containing your CSV and PDB files, respectively.
-3. **Execute the script:** Run `analyse.py` to compute Wasserstein distances and visualize the results.
+The `topologie.py` script also handles the calculation of Wasserstein distances between persistence barcodes and their visualization. The steps described in Step 2 are sufficient for the entire process from barcode generation to distance calculation and visualization.
 
-### Results
+#### Results
 
-- A heatmap visualizing the Wasserstein distances between protein structures.
-- A CSV file listing the calculated distances for further analysis.
+- Heatmap images visualizing the Wasserstein distances between protein structures from the reference and target sets. These images are saved in the specified output directory.
+- A CSV file `distance_results.csv` listing the calculated distances for further analysis. This file is also saved in the specified output directory.
+
+This streamlined process simplifies the analysis of protein structures using topological data analysis methods, from persistence barcode generation to comparing structures with Wasserstein distances.
 
 ## Additional Information
 
-Refer to the individual scripts for more detailed documentation on parameters and additional functionalities. Ensure all prerequisites are installed before running the scripts to avoid any execution errors.
+Ensure all prerequisites are installed before running the scripts to avoid any execution errors.
