@@ -53,7 +53,7 @@ Example usage:
 
 ## Step 3: Calculating Wasserstein Distance and Visualization
 
-The `topologie.py` script also handles the calculation of Wasserstein distances between persistence barcodes and their visualization. The steps described in Step 2 are sufficient for the entire process from barcode generation to distance calculation and visualization.
+The `topologie.py` script also handles the calculation of Wasserstein distances between persistence barcodes on the same dimension and their visualization. The steps described in Step 2 are sufficient for the entire process from barcode generation to distance calculation and visualization.
 
 #### Results
 
