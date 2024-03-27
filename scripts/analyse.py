@@ -9,7 +9,6 @@ import seaborn as sns
 import multiprocessing
 
 def count_alpha_carbons(file_path):
-    """Compte le nombre de carbones alpha dans un fichier PDB donné."""
     count = 0
     with open(file_path, 'r') as file:
         for line in file.readlines():
@@ -19,8 +18,6 @@ def count_alpha_carbons(file_path):
 
 def calculate_normalized_wasserstein_distance(args):
     file1, file2, output_csv_dir, pdb_reference_dir, pdb_target_dir = args
-    
-    # Utilise `construct_pdb_path` pour obtenir le bon chemin basé sur le préfixe du fichier
     pdb_file1 = construct_pdb_path(file1, pdb_reference_dir, pdb_target_dir)
     pdb_file2 = construct_pdb_path(file2, pdb_reference_dir, pdb_target_dir)
 
@@ -41,6 +38,7 @@ def calculate_normalized_wasserstein_distance(args):
     normalized_distance = distance / mean_alpha_count
 
     return normalized_distance, file1, file2, count1, count2
+    print("Distances calculées")
 
 def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
     actual_file_name = file_name.replace('ref_', '').replace('target_', '').replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb')
@@ -52,20 +50,21 @@ def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
 
 
 def process_pairs(output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
+    ref_files = [f for f in os.listdir(output_csv_dir) if f.startswith("ref_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
+    target_files = [f for f in os.listdir(output_csv_dir) if f.startswith("target_") and f.endswith(f'_barcode{barcode_suffix}.csv')]
+
     tasks = []
-    for file_a in os.listdir(output_csv_dir):
-        if file_a.endswith(f'_barcode{barcode_suffix}.csv'):
-            # Déterminer si le fichier provient de la référence ou de la cible
-            pdb_dir_a = pdb_reference_dir if file_a.startswith("ref_") else pdb_target_dir
-            for file_b in os.listdir(output_csv_dir):
-                if file_b.endswith(f'_barcode{barcode_suffix}.csv') and file_a != file_b:
-                    pdb_dir_b = pdb_reference_dir if file_b.startswith("ref_") else pdb_target_dir
-                    tasks.append((file_a, file_b, output_csv_dir, pdb_dir_a, pdb_dir_b))
+    for file_a in ref_files:
+        for file_b in target_files:
+            pdb_file1 = construct_pdb_path(file_a, pdb_reference_dir, pdb_target_dir)
+            pdb_file2 = construct_pdb_path(file_b, pdb_reference_dir, pdb_target_dir)
+            tasks.append((file_a, file_b, output_csv_dir, pdb_reference_dir, pdb_target_dir))
 
     with multiprocessing.Pool() as pool:
         results = pool.map(calculate_normalized_wasserstein_distance, tasks)
 
     return results
+
 
 def visualize_results(results, barcode_suffix, output_dir):
     filtered_results = [result for result in results if f"_barcode{barcode_suffix}.csv" in result[1]]
@@ -92,9 +91,9 @@ def visualize_results(results, barcode_suffix, output_dir):
     fig, axs = plt.subplots(1, 2, figsize=(14, 7))
 
     sns.kdeplot(distances, ax=axs[0], fill=True)
-    axs[0].set_title(f'Density Plot of Wasserstein Distances - Barcode {barcode_suffix}')
+    axs[0].set_title(f'Graphe de densité des Distances en Dimension {barcode_suffix}')
     axs[0].set_xlabel('Distance')
-    axs[0].set_ylabel('Density')
+    axs[0].set_ylabel('Densité')
 
     median, q1, q3 = np.median(distances), np.percentile(distances, 25), np.percentile(distances, 75)
     axs[0].axvline(median, color='r', linestyle='--', label=f'Médiane: {median:.3f}')
@@ -105,8 +104,8 @@ def visualize_results(results, barcode_suffix, output_dir):
     im = axs[1].imshow(distance_matrix, cmap='viridis', aspect='auto')
     fig.colorbar(im, ax=axs[1])
     axs[1].set_title(f'Heatmap of Wasserstein Distances - Barcode {barcode_suffix}')
-    axs[1].set_xlabel('Files')
-    axs[1].set_ylabel('Files')
+    axs[1].set_xlabel('Reference')
+    axs[1].set_ylabel('Target')
 
     axs[1].set_xticks([])
     axs[1].set_yticks([])
