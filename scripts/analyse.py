@@ -45,13 +45,12 @@ def calculate_normalized_wasserstein_distance(args):
 
     print("Distances calculées")
 
-def construct_pdb_path(file_name, pdb_reference_dir, pdb_target_dir):
+def construct_pdb_path(file_name, is_reference, pdb_reference_dir, pdb_target_dir):
     actual_file_name = file_name.replace('ref_', '').replace('target_', '').replace('_barcode1.csv', '.pdb').replace('_barcode2.csv', '.pdb')
-    if 'ref_' in file_name:
+    if is_reference:
         return os.path.join(pdb_reference_dir, actual_file_name)
     else:
         return os.path.join(pdb_target_dir, actual_file_name)
-
 
 
 def process_pairs(ref_output_csv_dir, target_output_csv_dir, barcode_suffix, pdb_reference_dir, pdb_target_dir):
