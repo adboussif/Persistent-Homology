@@ -1,20 +1,24 @@
 # Using the Scripts for Persistent Homology Analysis
 
-This project includes two main scripts designed to filter Alpha Carbones in PDB file (from database or predicted by Alphafold2) and to analyze protein structures through persistence barcodes and calculate Wasserstein distances for comparison.
+This project includes three main scripts designed to filter Alpha Carbones in PDB file (from database or predicted by Alphafold2) and to analyze protein structures through persistence barcodes and calculate Wasserstein distances for comparison.
 
 ## Requirements
 
 - Python 3.x
-- Libraries: GUDHI, BioPython, matplotlib, seaborn, pandas, numpy, pickle
+- Libraries: GUDHI, BioPython, matplotlib, seaborn, pandas, numpy, pickle, functools, argparse, csv
 - PDB files of protein structures
+
+```bash
+pip install GUDHI biopython matplotlib seaborn pandas numpy pickle functools argparse csv
+
 
 ## Step 1: Preparing PDB files / Predicting with Alphafold2
 
 ### Process
 
 1. **Predicting with ALphafold2 :** We used NMRbox, a VM which allows us to perform Alphafold2 prediction from our set of 111 primary BCL2 sequences.
-2bis. **Processing Alpha Carbonne Capture(Alphafold2)** Use select_ca.py which will process pdb file predicted by Alphafold and keep well predicted atomes based on their pLDDT.
-2bis. **Processing Alpha Carbonne Capture(PDBdatabase)** Use select_CA.py which will process pdb file downloaded on the PDB databse, and remove all atomes except alpha carbones.
+2bis. **Processing Alpha Carbonne Capture(Alphafold2)** Use alphafold.py which will process pdb file predicted by Alphafold and keep well predicted atomes based on their pLDDT.
+2bis. **Processing Alpha Carbonne Capture(PDBdatabase)** Use pdb.py which will process pdb file downloaded on the PDB databse, and remove all atomes except alpha carbones.
 3. **Run the script:** Execute the script that suits your dataset.
 
 ### Output
