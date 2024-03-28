@@ -102,9 +102,6 @@ def visualize_results(results, barcode_suffix, output_dir):
     axs[1].set_title(f'Heatmap of Wasserstein Distances - Dimension {barcode_suffix}')
     axs[1].set_xlabel('Target Files')
     axs[1].set_ylabel('Reference Files')
-    axs[1].set_xticks(np.arange(distance_matrix.shape[1]))
-    axs[1].set_yticks(np.arange(distance_matrix.shape[0]))
-
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'visualization_barcode{barcode_suffix}.png'))
     plt.close(fig)
