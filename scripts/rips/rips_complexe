@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+import os
+from functools import partial
+from multiprocessing import Pool
+from Bio.PDB import PDBParser
+import gudhi as gudhi
+import pandas as pd
+
+def read_coordinates_from_pdb(file_path):
+    parser = PDBParser(QUIET=True)
+    structure = parser.get_structure("protein", file_path)
+    coordinates = [atom.get_coord() for model in structure for chain in model for residue in chain for atom in residue]
+    return coordinates
+
+def calculate_rips_complex(coordinates):
+    rips_complex = gudhi.RipsComplex(points=coordinates)
+    simplex_tree = rips_complex.create_simplex_tree(max_dimension=3)
+    simplex_tree.compute_persistence()
+    barcode1 = simplex_tree.persistence_intervals_in_dimension(1)
+    barcode2 = simplex_tree.persistence_intervals_in_dimension(2)
+    return barcode1, barcode2
+
+def process_file(input_path, output_dir1, output_dir2, file):
+    pdb_file_path = os.path.join(input_path, file)
+    coordinates = read_coordinates_from_pdb(pdb_file_path)
+    barcode1, barcode2 = calculate_rips_complex(coordinates)
+    barcode_df1 = pd.DataFrame(barcode1, columns=["Birth", "Death"])
+    barcode_df2 = pd.DataFrame(barcode2, columns=["Birth", "Death"])
+    barcode_file_path1 = os.path.join(output_dir1, f"{file[:-4]}_barcodes.csv")
+    barcode_file_path2 = os.path.join(output_dir2, f"{file[:-4]}_barcodes.csv")
+    barcode_df1.to_csv(barcode_file_path1, index=False)
+    barcode_df2.to_csv(barcode_file_path2, index=False)
+
+if __name__ == "__main__":
+    input_path = "/data/home/tfoussenisalamicisse/projet_hp/all_prot_structure_coord"
+    output_dir1 = "/data/home/tfoussenisalamicisse/projet_hp/results/bc_dim1"
+    output_dir2 ="/data/home/tfoussenisalamicisse/projet_hp/results/bc_dim2"
+
+    files = [f for f in os.listdir(input_path) if f.endswith('.pdb')]
+    process_file_partial = partial(process_file, input_path, output_dir1, output_dir2)
+
+    with Pool() as pool:
+        pool.map(process_file_partial, files)
+
