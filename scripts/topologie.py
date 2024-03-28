@@ -31,9 +31,9 @@ def main(reference_path, target_path, output_dir):
         visualize_results(results, barcode_suffix, output_dir)
 
 
-    # Enregistrement des résultats globaux dans un fichier CSV
-    save_results_to_csv_path = os.path.join(output_dir, "distance_results.csv")
-    save_results_to_csv(results, save_results_to_csv_path, barcode_suffix)
+        # Enregistrement des résultats globaux dans un fichier CSV
+        save_results_to_csv_path = os.path.join(output_dir, "distance_results.csv")
+        save_results_to_csv(results, save_results_to_csv_path, barcode_suffix)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script pour l'analyse topologique des protéines.")
