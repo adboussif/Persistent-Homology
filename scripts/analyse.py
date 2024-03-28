@@ -76,9 +76,10 @@ def visualize_results(results, barcode_suffix, output_dir):
     distance_matrix = np.full((len(ref_names), len(target_names)), np.nan)
     for res in filtered_results:
         if res[0] is not np.nan:
-            j = ref_names.index(res[1])  # Fichiers de référence sur l'axe des x
-            i = target_names.index(res[2])  # Fichiers cibles sur l'axe des y
-            distance_matrix[j, i] = res[0]  # Correction de l'indice
+            i = ref_names.index(res[1])
+            j = target_names.index(res[2])
+            distance_matrix[i, j] = res[0]
+
 
     # Visualisation
     fig, axs = plt.subplots(1, 2, figsize=(14, 7))
@@ -96,14 +97,13 @@ def visualize_results(results, barcode_suffix, output_dir):
     axs[0].legend()
 
     # Heatmap
-    im = axs[1].imshow(distance_matrix, cmap='viridis', aspect='auto')
+    im = axs[1].imshow(distance_matrix, cmap='viridis', aspect=1)
     fig.colorbar(im, ax=axs[1])
-    axs[1].set_title(f'Heatmap of Wasserstein Distances - Barcode {barcode_suffix}')
-    axs[1].set_xlabel('Reference Files')
-    axs[1].set_ylabel('Target Files')
-
-    axs[1].set_xticks([])
-    axs[1].set_yticks([])
+    axs[1].set_title(f'Heatmap of Wasserstein Distances - Dimension {barcode_suffix}')
+    axs[1].set_xlabel('Target Files')
+    axs[1].set_ylabel('Reference Files')
+    ax.set_xticks(np.arange(distance_matrix.shape[1]))
+    ax.set_yticks(np.arange(distance_matrix.shape[0]))
 
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'visualization_barcode{barcode_suffix}.png'))
