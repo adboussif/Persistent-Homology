@@ -68,7 +68,8 @@ def get_go_terms_from_uniprot(uniprot_id):
         return go_terms
     return []
 
-def main(pdb_dir, output_csv_path):
+def main(pdb_dir):
+    output_csv_path = os.path.join(pdb_dir, "results_annotation.csv")
     pdb_ids = get_pdb_ids(pdb_dir)
     print(f"Found PDB IDs: {pdb_ids}")
 
@@ -85,10 +86,9 @@ def main(pdb_dir, output_csv_path):
     results_df.to_csv(output_csv_path, index=False)
     print(f"Results saved to {output_csv_path}")
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script pour récupérer les IDs UniProt à partir des IDs PDB.")
+    parser = argparse.ArgumentParser(description="Script pour récupérer les IDs UniProt à partir des IDs PDB et annoter les protéines.")
     parser.add_argument('-p', '--pdb', required=True, help="Chemin vers le dossier contenant les fichiers PDB.")
-    parser.add_argument('-o', '--output', required=True, help="Chemin vers le fichier CSV pour sauvegarder les correspondances UniProt.")
-    
     args = parser.parse_args()
-    main(args.pdb, args.output)
+    main(args.pdb)
