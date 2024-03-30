@@ -21,9 +21,9 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     merged_df = merged_df.merge(ref_annotations_df.rename(columns={'Function':'Function Reference'}),
                                 left_on='Reference', right_on='PDB_ID', how='left')
     
-    # Sélectionner et renommer les colonnes pour le DataFrame final
+    # Inclure la colonne 'Distance' dans le DataFrame final
     final_df = merged_df[['Target', 'Function Target', 'Number of Alpha Carbons in Target',
-                          'Reference', 'Function Reference', 'Number of Alpha Carbons in Reference']]
+                          'Reference', 'Function Reference', 'Number of Alpha Carbons in Reference', 'Distance']]
     
     return final_df
 
