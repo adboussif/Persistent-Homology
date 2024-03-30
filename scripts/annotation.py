@@ -23,15 +23,18 @@ def check_job_status(job_id):
         if response.status_code == 200:
             status = response.json()
             if status.get('jobStatus') == 'FINISHED':
+                print("Job finished successfully.")
                 return True
             elif status.get('jobStatus') == 'RUNNING':
-                print("Job is still running. Waiting before checking again...")
-                time.sleep(300)
+                print("Job is still running. Waiting 5 minutes before checking again...")
+                time.sleep(300)  # Attendre 5 minutes avant de vérifier à nouveau.
             else:
+                print(f"Job finished with unexpected status: {status.get('jobStatus')}")
                 return False
         else:
-            raise Exception(f"Error fetching job status: {response.status_code} {response.text}")
-    return False
+            print(f"Error fetching job status: {response.status_code} {response.text}")
+            return False
+
 
 def get_uniprot_ids_from_pdb(pdb_ids):
     job_id = submit_id_mapping_request('PDB', 'UniProtKB', pdb_ids)
