@@ -14,7 +14,6 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     
     # Nettoyer les noms dans les colonnes 'Target' et 'Reference'
     distances_df['Target'] = distances_df['Target'].apply(clean_name)
-    distances_df['Reference'] = distances_df['Reference'].apply(clean_name)
     
     # Charger les données d'annotation cible et nettoyer
     target_annotations_df = pd.read_csv(target_annotations_path)
@@ -24,7 +23,12 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     merged_df = distances_df.merge(target_annotations_df[['PDB_ID', 'Function']],
                                    left_on='Target', right_on='PDB_ID', how='left')
     merged_df.rename(columns={'Function': 'Function Target'}, inplace=True)
-
+    
+    # Ajouter des colonnes de 'Reference' à partir des distances_df si -ref n'est pas fourni
+    if not ref_annotations_path:
+        merged_df['Function Reference'] = None  # Créer une colonne vide pour 'Function Reference'
+        merged_df['Number of Alpha Carbons in Reference'] = None  # Créer une colonne vide pour 'Number of Alpha Carbons in Reference'
+    
     # Charger et fusionner les données de référence si fournies
     if ref_annotations_path:
         ref_annotations_df = pd.read_csv(ref_annotations_path)
@@ -34,8 +38,8 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
         merged_df.rename(columns={'Function': 'Function Reference'}, inplace=True)
 
     # Inclure la colonne 'Distance' dans le DataFrame final
-    final_df = merged_df[['Target', 'Function Target', 'Number of Alpha Carbons in Target', 
-                          'Distance', 'Reference', 'Function Reference', 'Number of Alpha Carbons in Reference']]
+    final_df = merged_df[['Target', 'Function Target', 'Number of Alpha Carbons in Target',
+                          'Distance', 'Reference', 'Function Reference', 'Number of Alpha Carbons in Reference']].fillna("N/A")
 
     return final_df
 
