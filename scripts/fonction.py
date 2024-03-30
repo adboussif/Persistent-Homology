@@ -6,7 +6,7 @@ import re
 
 def clean_name(name):
     # Supprimer les préfixes "ref_" ou "target_" et les suffixes "_barcodeX.csv"
-    cleaned_name = re.sub(r'^(ref_|target_)?(\d\w{3})_barcode\d\.csv$', r'\2', name)
+    cleaned_name = re.sub(r'^(ref_|target_)?(\d\w{3})_ca_barcode\d\.csv$', r'\2', name)
     return cleaned_name
 
 
