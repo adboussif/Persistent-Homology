@@ -16,23 +16,35 @@ def submit_id_mapping_request(from_db, to_db, ids):
     else:
         raise Exception(f"Error submitting ID mapping request: {response.status_code} {response.text}")
 
-
-def check_id_mapping_results(job_id):
-    results_url = f'https://rest.uniprot.org/idmapping/results/{job_id}'
+def check_job_status(job_id):
+    status_url = f'https://rest.uniprot.org/idmapping/status/{job_id}'
     while True:
-        response = requests.get(results_url)
+        response = requests.get(status_url)
         if response.status_code == 200:
-            return response.json()
-        elif response.status_code == 202:
-            print("Results not ready yet, waiting...")
-            time.sleep(30)
+            status = response.json()
+            if status.get('jobStatus') == 'FINISHED':
+                return True
+            elif status.get('jobStatus') == 'RUNNING':
+                print("Job is still running. Waiting before checking again...")
+                time.sleep(30)
+            else:
+                return False
         else:
-            raise Exception(f"Error fetching ID mapping results: {response.status_code} {response.text}")
+            raise Exception(f"Error fetching job status: {response.status_code} {response.text}")
+    return False
 
 def get_uniprot_ids_from_pdb(pdb_ids):
     job_id = submit_id_mapping_request('PDB', 'UniProtKB', pdb_ids)
     print(f"Job submitted successfully. Job ID: {job_id}")
-    return check_id_mapping_results(job_id)
+    if check_job_status(job_id):
+        results_url = f'https://rest.uniprot.org/idmapping/results/{job_id}'
+        response = requests.get(results_url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise Exception(f"Error fetching ID mapping results: {response.status_code} {response.text}")
+    else:
+        raise Exception("Job did not finish successfully.")
 
 def get_pdb_ids(pdb_dir):
     pdb_ids = []
@@ -64,7 +76,7 @@ def get_go_terms_from_uniprot(uniprot_id):
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
-            go_terms = [go.get('id') for go in data.get('goTerms', []) if go.get('aspect') == 'B']
+            go_terms = [go.get('id') for go in data.get('goTerms', []) if go.get('aspect') == 'B']  # Assuming 'B' for biological process
             return "; ".join(go_terms)
     return ""
 
@@ -73,16 +85,17 @@ def main(pdb_dir):
     pdb_ids = get_pdb_ids(pdb_dir)
     print(f"Found PDB IDs: {pdb_ids}")
 
-    uniprot_results_json = get_uniprot_ids_from_pdb(pdb_ids)
-    uniprot_mapping = process_mapping_results(uniprot_results_json)
+    try:
+        uniprot_results_json = get_uniprot_ids_from_pdb(pdb_ids)
+        uniprot_mapping = process_mapping_results(uniprot_results_json)
+    except Exception as e:
+        print(f"An error occurred while mapping PDB to UniProt IDs: {e}")
+        uniprot_mapping = {}
 
     results_data = []
     for pdb_id in pdb_ids:
         uniprot_id = uniprot_mapping.get(pdb_id, "")
-        go_terms = get_go_terms_from_uniprot(uniprot_id)
-        if not go_terms:
-            pdb_file_path = os.path.join(pdb_dir, pdb_id + '.pdb')
-            go_terms = get_function_from_pdb_file(pdb_file_path)
+        go_terms = get_go_terms_from_uniprot(uniprot_id) if uniprot_id else get_function_from_pdb_file(os.path.join(pdb_dir, pdb_id + '.pdb'))
         results_data.append([pdb_id, uniprot_id, go_terms])
 
     results_df = pd.DataFrame(results_data, columns=['PDB_ID', 'UniProt_ID', 'Function/GO_Terms'])
@@ -90,7 +103,7 @@ def main(pdb_dir):
     print(f"Results saved to {output_csv_path}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script pour récupérer les IDs UniProt à partir des IDs PDB et annoter les protéines.")
-    parser.add_argument('-p', '--pdb', required=True, help="Chemin vers le dossier contenant les fichiers PDB.")
+    parser = argparse.ArgumentParser(description="Script to fetch UniProt IDs from PDB IDs and annotate proteins.")
+    parser.add_argument('-p', '--pdb', required=True, help="Path to the directory containing PDB files.")
     args = parser.parse_args()
     main(args.pdb)
