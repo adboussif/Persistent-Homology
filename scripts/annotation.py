@@ -32,7 +32,7 @@ def check_id_mapping_results(job_id):
             return response.json()  # This should be the final results in JSON format
         elif response.status_code == 202:
             print("Results not ready yet, waiting...")
-            time.sleep(5)  # Wait for 5 seconds before checking again
+            time.sleep(30)  # Wait for 5 seconds before checking again
         else:
             raise Exception(f"Error fetching ID mapping results: {response.status_code} {response.text}")
 
