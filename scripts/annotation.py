@@ -16,6 +16,7 @@ def submit_id_mapping_request(from_db, to_db, ids):
     else:
         raise Exception(f"Error submitting ID mapping request: {response.status_code} {response.text}")
 
+
 def check_id_mapping_results(job_id):
     results_url = f'https://rest.uniprot.org/idmapping/results/{job_id}'
     while True:
@@ -27,6 +28,11 @@ def check_id_mapping_results(job_id):
             time.sleep(30)
         else:
             raise Exception(f"Error fetching ID mapping results: {response.status_code} {response.text}")
+
+def get_uniprot_ids_from_pdb(pdb_ids):
+    job_id = submit_id_mapping_request('PDB', 'UniProtKB', pdb_ids)
+    print(f"Job submitted successfully. Job ID: {job_id}")
+    return check_id_mapping_results(job_id)
 
 def get_pdb_ids(pdb_dir):
     pdb_ids = []
@@ -40,7 +46,7 @@ def process_mapping_results(json_data):
     mapping_results = {}
     for result in json_data.get('results', []):
         pdb_id = result.get('from')
-        uniprot_id = result.get('to')
+        uniprot_id = result.get('to', {}).get('id', '')
         mapping_results[pdb_id] = uniprot_id
     return mapping_results
 
@@ -65,7 +71,10 @@ def get_go_terms_from_uniprot(uniprot_id):
 def main(pdb_dir):
     output_csv_path = os.path.join(pdb_dir, "results_annotation.csv")
     pdb_ids = get_pdb_ids(pdb_dir)
-    uniprot_mapping = get_uniprot_ids_from_pdb(pdb_ids)
+    print(f"Found PDB IDs: {pdb_ids}")
+
+    uniprot_results_json = get_uniprot_ids_from_pdb(pdb_ids)
+    uniprot_mapping = process_mapping_results(uniprot_results_json)
 
     results_data = []
     for pdb_id in pdb_ids:
@@ -81,7 +90,7 @@ def main(pdb_dir):
     print(f"Results saved to {output_csv_path}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script to fetch UniProt IDs from PDB IDs and annotate proteins.")
-    parser.add_argument('-p', '--pdb', required=True, help="Path to the directory containing PDB files.")
+    parser = argparse.ArgumentParser(description="Script pour récupérer les IDs UniProt à partir des IDs PDB et annoter les protéines.")
+    parser.add_argument('-p', '--pdb', required=True, help="Chemin vers le dossier contenant les fichiers PDB.")
     args = parser.parse_args()
     main(args.pdb)
