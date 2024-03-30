@@ -1,0 +1,26 @@
+Reference,Target,Distance,Number of Alpha Carbons in Target,Number of Alpha Carbons in Reference
+ref_8spf_ca,target_8spf_ca,0.0,422,422
+ref_8g1t_ca,target_8g1t_ca,0.0,565,565
+ref_8svk_ca,target_8svk_ca,0.0,294,294
+ref_8spe_ca,target_8spe_ca,0.0,2453,2453
+ref_8spz_ca,target_8spz_ca,0.0,283,283
+ref_8svk_ca,target_8spz_ca,0.23566288345110034,294,283
+ref_8spz_ca,target_8svk_ca,0.23566288345110048,283,294
+ref_8svk_ca,target_8spf_ca,0.4130414628760469,294,422
+ref_8spf_ca,target_8svk_ca,0.41304146287604754,422,294
+ref_8spz_ca,target_8spf_ca,0.42901919287058843,283,422
+ref_8spf_ca,target_8spz_ca,0.42901919287058865,422,283
+ref_8g1t_ca,target_8spf_ca,0.4980723949480164,565,422
+ref_8spf_ca,target_8g1t_ca,0.4980723949480167,422,565
+ref_8g1t_ca,target_8svk_ca,0.5305632990555539,565,294
+ref_8svk_ca,target_8g1t_ca,0.5305632990555539,294,565
+ref_8g1t_ca,target_8spz_ca,0.5398956882805878,565,283
+ref_8spz_ca,target_8g1t_ca,0.5398956882805881,283,565
+ref_8g1t_ca,target_8spe_ca,0.7754526798289162,565,2453
+ref_8spe_ca,target_8g1t_ca,0.7754526798289164,2453,565
+ref_8spf_ca,target_8spe_ca,0.9235907798250008,422,2453
+ref_8spe_ca,target_8spf_ca,0.9235907798250054,2453,422
+ref_8svk_ca,target_8spe_ca,0.9898569776416242,294,2453
+ref_8spe_ca,target_8svk_ca,0.9898569776416265,2453,294
+ref_8spz_ca,target_8spe_ca,0.995563107663637,283,2453
+ref_8spe_ca,target_8spz_ca,0.995563107663641,2453,283
