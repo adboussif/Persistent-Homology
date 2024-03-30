@@ -26,7 +26,7 @@ def check_job_status(job_id):
                 return True
             elif status.get('jobStatus') == 'RUNNING':
                 print("Job is still running. Waiting before checking again...")
-                time.sleep(30)
+                time.sleep(300)
             else:
                 return False
         else:
