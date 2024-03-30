@@ -8,19 +8,20 @@ import time
 
 def submit_id_mapping_request(from_db, to_db, ids):
     url = 'https://rest.uniprot.org/idmapping/run'
-    headers = {'Content-Type': 'application/json'}
-    # Assurez-vous que ids est une chaîne de caractères avec les identifiants séparés par des virgules
-    ids_str = ','.join(ids)  # Convertir la liste en chaîne si ce n'est pas déjà le cas
-    payload = {
+    # Convertir la liste d'IDs en une chaîne de caractères séparée par des virgules
+    ids_str = ','.join(ids)
+    # Les données sont envoyées comme un formulaire
+    data = {
         'from': from_db,
         'to': to_db,
         'ids': ids_str
     }
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, data=data)
     if response.status_code == 200:
         return response.json()['jobId']
     else:
         raise Exception(f"Error submitting ID mapping request: {response.status_code} {response.text}")
+
 
 
 def check_id_mapping_results(job_id):
@@ -63,7 +64,7 @@ def get_go_terms_from_uniprot(uniprot_id):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        go_terms = [go.get('id') for go in data.get('goTerms', []) if go.get('aspect') == 'F']  # Aspect 'F' for molecular function
+        go_terms = [go.get('id') for go in data.get('goTerms', []) if go.get('aspect') == 'B']  # Aspect 'F' for molecular function
         return go_terms
     return []
 
