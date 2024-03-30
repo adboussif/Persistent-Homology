@@ -11,17 +11,19 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     ref_annotations_df = pd.read_csv(ref_annotations_path)
     target_annotations_df = pd.read_csv(target_annotations_path)
     
-    # Supprimer les préfixes/suffixes pour correspondre aux ID PDB
-    distances_df['Reference'] = distances_df['Reference'].str.extract(r'(\d\w{3})')  # Extractions des ID PDB de Reference
-    distances_df['Target'] = distances_df['Target'].str.extract(r'(\d\w{3})')  # Extractions des ID PDB de Target
+    # Nettoyer les colonnes pour correspondre aux ID PDB
+    distances_df['Reference'] = distances_df['Reference'].str.extract(r'(\d\w{3})')  # Extrait les ID PDB de Reference
+    distances_df['Target'] = distances_df['Target'].str.extract(r'(\d\w{3})')  # Extrait les ID PDB de Target
     
-    # Fusionner les données
-    merged_df = distances_df.merge(target_annotations_df, left_on='Target', right_on='PDB_ID', how='left')
-    merged_df = merged_df.merge(ref_annotations_df, left_on='Reference', right_on='PDB_ID', how='left')
+    # Fusionner les données en s'assurant que les colonnes correspondent
+    merged_df = distances_df.merge(target_annotations_df.rename(columns={'Function':'Function Target'}),
+                                   left_on='Target', right_on='PDB_ID', how='left')
+    merged_df = merged_df.merge(ref_annotations_df.rename(columns={'Function':'Function Reference'}),
+                                left_on='Reference', right_on='PDB_ID', how='left')
     
-    # Réarranger les colonnes selon l'ordre demandé
-    final_df = merged_df[['Target', 'Function', 'Number of Alpha Carbons in Target', 'Reference', 'Function_Reference', 'Number of Alpha Carbons in Reference']]
-    final_df.columns = ['Target', 'Function Target', 'Number of Residues Target', 'Reference', 'Function Reference', 'Number of Residues Reference']
+    # Sélectionner et renommer les colonnes pour le DataFrame final
+    final_df = merged_df[['Target', 'Function Target', 'Number of Alpha Carbons in Target',
+                          'Reference', 'Function Reference', 'Number of Alpha Carbons in Reference']]
     
     return final_df
 
