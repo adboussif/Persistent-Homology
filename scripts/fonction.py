@@ -13,7 +13,6 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     distances_df = pd.read_csv(distances_path)
     
     # Nettoyer les colonnes pour correspondre aux noms
-    distances_df['Reference'] = distances_df['Reference'].apply(clean_name)
     distances_df['Target'] = distances_df['Target'].apply(clean_name)
     
     # Charger les données d'annotation cible et nettoyer
@@ -21,19 +20,22 @@ def load_and_merge_data(distances_path, ref_annotations_path, target_annotations
     target_annotations_df['PDB_ID'] = target_annotations_df['PDB_ID'].apply(clean_name)
     
     # Fusionner les données de target
-    merged_df = distances_df.merge(target_annotations_df, left_on='Target', right_on='PDB_ID', how='left')
+    merged_df = distances_df.merge(target_annotations_df[['PDB_ID', 'Function']],
+                                   left_on='Target', right_on='PDB_ID', how='left')
+    merged_df.rename(columns={'Function': 'Function Target'}, inplace=True)
     
+    # Si ref_annotations_path est fourni, charger les données de référence et fusionner
     if ref_annotations_path:
-        # Charger les données d'annotation de référence si spécifié et nettoyer
         ref_annotations_df = pd.read_csv(ref_annotations_path)
         ref_annotations_df['PDB_ID'] = ref_annotations_df['PDB_ID'].apply(clean_name)
-        # Fusionner les données de référence
-        merged_df = merged_df.merge(ref_annotations_df, left_on='Reference', right_on='PDB_ID', how='left', suffixes=('_Target', '_Reference'))
-    
-    # Sélectionner et renommer les colonnes pour le DataFrame final
-    final_columns = ['Target', 'Function_Target', 'Number of Alpha Carbons in Target', 'Distance']
+        merged_df = merged_df.merge(ref_annotations_df[['PDB_ID', 'Function']],
+                                    left_on='Reference', right_on='PDB_ID', how='left', suffixes=('', '_Reference'))
+        merged_df.rename(columns={'Function': 'Function Reference'}, inplace=True)
+
+    # Inclure la colonne 'Distance' dans le DataFrame final
+    final_columns = ['Target', 'Function Target', 'Number of Alpha Carbons in Target', 'Distance']
     if ref_annotations_path:
-        final_columns += ['Reference', 'Function_Reference', 'Number of Alpha Carbons in Reference']
+        final_columns += ['Reference', 'Function Reference', 'Number of Alpha Carbons in Reference']
     
     final_df = merged_df[final_columns]
     
