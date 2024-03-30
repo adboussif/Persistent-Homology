@@ -14,14 +14,18 @@ def get_pdb_ids(pdb_dir):
     return pdb_ids
 
 def get_function_from_pdb_file(pdb_file_path):
-    """Extrait la description de la protéine à partir de la première ligne du fichier PDB."""
     with open(pdb_file_path, 'r') as file:
         for line in file:
             if line.startswith("HEADER"):
-                # La description est située après 'HEADER'
-                description = line[62:].strip()
-                return description
+                # Divise la ligne en utilisant l'ID de la protéine comme délimiteur
+                parts = line.split()  # Découpe la ligne en parties basées sur les espaces
+                if len(parts) > 3:  # Vérifie qu'il y a suffisamment de parties
+                    # La description de la fonction est entre 'HEADER' et l'ID de la protéine
+                    function_description = " ".join(parts[1:-2]).strip()
+                    return function_description
+                break  # Sort de la boucle après avoir traité la ligne HEADER
     return "Function not found"
+
 
 def create_annotation_dataframe(pdb_dir, pdb_ids):
     """Crée un DataFrame avec l'ID PDB et la fonction associée pour chaque fichier."""
