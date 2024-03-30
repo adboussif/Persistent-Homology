@@ -7,16 +7,19 @@ import time
 def submit_id_mapping_request(from_db, to_db, ids):
     url = 'https://rest.uniprot.org/idmapping/run'
     headers = {'Content-Type': 'application/json'}
+    # Assurez-vous que ids est une chaîne de caractères avec les identifiants séparés par des virgules
+    ids_str = ','.join(ids)  # Convertir la liste en chaîne si ce n'est pas déjà le cas
     payload = {
         'from': from_db,
         'to': to_db,
-        'ids': ids
+        'ids': ids_str
     }
     response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
         return response.json()['jobId']
     else:
         raise Exception(f"Error submitting ID mapping request: {response.status_code} {response.text}")
+
 
 def check_id_mapping_results(job_id):
     results_url = f'https://rest.uniprot.org/idmapping/results/{job_id}'
