@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Chemin du dossier contenant les fichiers PDB originaux
-SOURCE_DIR="/data/home/aboussif/Projet14/deliverable/topologie/data/Ras/Ras/pdb"
+SOURCE_DIR="/data/home/aboussif/Projet14/deliverable/topologie/data/Ras/sapiens/pdb_filtre"
 
 # Chemin du dossier de destination pour les 100 fichiers PDB sélectionnés
-DEST_DIR="/data/home/aboussif/Projet14/deliverable/topologie/data/Ras/Ras/pdb_files"
+DEST_DIR="/data/home/aboussif/Projet14/deliverable/topologie/data/Ras/sapiens/pdb_files"
 
 # Créer le dossier de destination s'il n'existe pas
 mkdir -p "$DEST_DIR"
